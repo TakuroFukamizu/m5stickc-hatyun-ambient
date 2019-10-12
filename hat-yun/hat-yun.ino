@@ -15,6 +15,7 @@ const char* password = "hogehoge";
 unsigned int channelId = hogehoge; // AmbientのチャネルID
 const char* writeKey = "hogehoge"; // ライトキー
 
+uint32_t ambient_upload_interval = 60 * 1000; //1min
 SHT20 sht20;
 Adafruit_BMP280 bmp;
 
@@ -22,6 +23,7 @@ WiFiClient client;
 Ambient ambient;
 
 uint32_t update_time = 0;
+uint32_t ambient_upload_time = 0; // 85日間はOK
 float tmp, hum;
 float pressure;
 uint16_t light;
@@ -91,13 +93,15 @@ void loop() {
         M5.Lcd.printf("%d hPa\r\n", int(pressure / 100));
 
         update_time = millis() + 1000;
-        
+    }
+    if ( millis() > ambient_upload_time) {
         // send env values to ambient
         ambient.set(1, String(tmp).c_str());
         ambient.set(2, String(hum).c_str());
         ambient.set(3, String(pressure / 100).c_str());
         ambient.set(4, String(pressure).c_str());
         ambient.send();
+        ambient_upload_time = millis() + ambient_upload_interval;
     }
     M5.update();
 
