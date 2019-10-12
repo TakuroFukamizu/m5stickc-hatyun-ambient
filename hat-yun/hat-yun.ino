@@ -8,14 +8,10 @@
 #include <math.h>
 #include "display.h"
 #include "Ambient.h"
-
-const char* ssid = "hogehoge";
-const char* password = "hogehoge";
-
-unsigned int channelId = hogehoge; // AmbientのチャネルID
-const char* writeKey = "hogehoge"; // ライトキー
+#include "env.h"
 
 uint32_t ambient_upload_interval = 60 * 1000; //1min
+
 SHT20 sht20;
 Adafruit_BMP280 bmp;
 
@@ -75,7 +71,7 @@ void loop() {
         // 電源投入直後に異常値が読めたら500ms待って再度読み込む
         do{
             delay(500);
-            pressure = bmp.getPressure();
+            pressure = bmp.readPressure();
         }while(pressure <= 800.0);
 
         M5.Lcd.setCursor(3, 3);
